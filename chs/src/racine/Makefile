@@ -13,6 +13,7 @@ all: $(VDT) $(CMD)
 	$(COMPILECMD) $< $@
 
 install:
+	mkdir -p ../../bin/racine
 	cp $(VDT) $(CMD) ../../bin/racine
 
 clean:

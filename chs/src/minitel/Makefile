@@ -13,6 +13,7 @@ all: $(VDT) $(CMD)
 	$(COMPILECMD) $< $@
 
 install:
+	mkdir -p ../../bin/minitel
 	cp $(VDT) $(CMD) ../../bin/minitel
 
 clean:
