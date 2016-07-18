@@ -1,5 +1,5 @@
 // Uncomment following line to enable debug messages
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
  #define DEBUG_PRINT(x)  Serial.println (x)
@@ -25,7 +25,6 @@
 #define CHIPSELECT 10
 
 // Définition du port série logiciel
-//SoftwareSerialMinitel minitelSerial(RXPIN, TXPIN); // (RX/TX)
 SoftwareSerialExtended minitelSerial(RXPIN, TXPIN); // (RX/TX)
 
 // Garde trace des noms des fichiers de page et commandes en cours
@@ -60,10 +59,6 @@ void setup() {
     DEBUG_PRINT ("Impossible de lire la carte SD");
     return;
   }
-
-  // Activation du port série logiciel
-  pinMode(RXPIN, INPUT);
-  pinMode(TXPIN, OUTPUT);
 
   DEBUG_PRINT ("Initialisation de la liaison serie avec le Minitel");
   minitelSerial.begin(1200, 7);
