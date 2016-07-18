@@ -42,5 +42,4 @@ Un **Arduino Uno** (ou plus) est nécessaire.
 Pour compiler MiniPlay, vous aurez besoin de l’environnement de développement
 standard de l’Arduino.
 
-Les dépendances suivantes doivent être installées et disponibles :
-**SdFat, SoftwareSerialMinitel, Wire, RTClib**.
+Les dépendances suivantes doivent être installées et disponibles : **SdFat**.
