@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="manif" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Saint Jean Porte-Latine -->
+    <definir nom="titre">Saint Jean Porte-Latine</definir>
+    <inclure page="include/fiche.xml"/>
+
+    <position colonne="3" ligne="9"/>
+    <texte largeur="36">Le CHS fête les imprimeurs au début du mois de mai.
+    C’est l’occasion de faire des démonstrations de machines dont certaines
+    ont plus de deux siècles mais continuent de rendre de grands services.</texte>
+
+    <position colonne="0" ligne="2" rappel="rappel"/>
+    <texte largeur="36">Un atelier pour les petits leur permet d’imprimer
+    leur prénom à la façon de Gutenberg.</texte>
+
+    <position colonne="0" ligne="2" rappel="rappel" />
+    <texte>Les grands sont aussi admis ;-)</texte>
+
+    <!-- Commandes disponibles -->
+    <position colonne="35" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

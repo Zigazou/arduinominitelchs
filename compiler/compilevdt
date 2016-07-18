@@ -1,0 +1,667 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import xml.dom.minidom
+from binascii import unhexlify
+
+from PIL import Image
+from operator import itemgetter
+
+class MinitelConversionImage:
+    def huitNiveaux(self, niveau):
+        # Niveau peut soit être un tuple soit un entier
+        # Gère les deux cas en testant l’exception
+        try:
+            return niveau[0] * 8 / 256
+        except:
+            return niveau * 8 / 256
+
+    def deuxCoul(self, couleurs):
+        niveaux = [0, 0, 0, 0, 0, 0, 0, 0]
+        for couleur in couleurs: niveaux[couleur] += 1
+
+        niveaux = [(0, niveaux[0]), (1, niveaux[1]), (2, niveaux[2]),
+                   (3, niveaux[3]), (4, niveaux[4]), (5, niveaux[5]),
+                   (6, niveaux[6]), (7, niveaux[7])]
+
+        niveaux = sorted(niveaux, key=itemgetter(1), reverse = True)
+
+        return (niveaux[0][0], niveaux[1][0])
+
+    def arpouavp(self, couleur, arp, avp):
+        if(abs(arp - couleur) < abs(avp - couleur)): return 0
+        return 1
+
+    def minitelArp(self, niveau):
+        # Couleurs de la plus foncée à la plus claire
+        if niveau == 0: return chr(0x1b) + chr(0x50) # noir
+        if niveau == 1: return chr(0x1b) + chr(0x54) # bleu
+        if niveau == 2: return chr(0x1b) + chr(0x51) # rouge
+        if niveau == 3: return chr(0x1b) + chr(0x55) # magenta
+        if niveau == 4: return chr(0x1b) + chr(0x52) # vert
+        if niveau == 5: return chr(0x1b) + chr(0x56) # cyan
+        if niveau == 6: return chr(0x1b) + chr(0x53) # jaune
+        if niveau == 7: return chr(0x1b) + chr(0x57) # blanc
+        return chr(0x1b) + chr(0x50)
+
+    def minitelAvp(self, niveau):
+        # Couleurs de la plus foncée à la plus claire
+        if niveau == 0: return chr(0x1b) + chr(0x40) # noir
+        if niveau == 1: return chr(0x1b) + chr(0x44) # bleu
+        if niveau == 2: return chr(0x1b) + chr(0x41) # rouge
+        if niveau == 3: return chr(0x1b) + chr(0x45) # magenta
+        if niveau == 4: return chr(0x1b) + chr(0x42) # vert
+        if niveau == 5: return chr(0x1b) + chr(0x46) # cyan
+        if niveau == 6: return chr(0x1b) + chr(0x43) # jaune
+        if niveau == 7: return chr(0x1b) + chr(0x47) # blanc
+        return chr(0x1b) + chr(0x47)
+
+    def convertir(self, nomFichier, fond = -1):
+        # Ouvre l’image
+        image = Image.open(nomFichier)
+
+        # Récupère les dimensions de l’image
+        largeurEntree, hauteurEntree = image.size
+
+        # En mode semi-graphique, un caractère a 2 pixels de largeur
+        # et 3 pixels de hauteur
+        largeurSortie = largeurEntree / 2
+        hauteurSortie = hauteurEntree / 3
+
+        combine = []
+
+        # Place le curseur en haut à gauche
+        combine.append(chr(0x1e))
+
+        # Passe en mode semi-graphique
+        combine.append(chr(0x0e))
+
+        for h in range(0, hauteurSortie):
+            # Variables pour l’optimisation du code généré
+            oldArp = -1
+            oldAvp = -1
+            oldMosaique = chr(0)
+            compte = 0
+
+            for l in range(0, largeurSortie):
+                # Récupère 6 pixels
+                b00 = image.getpixel((l * 2 + 0, h * 3 + 0))
+                b01 = image.getpixel((l * 2 + 1, h * 3 + 0))
+                b10 = image.getpixel((l * 2 + 0, h * 3 + 1))
+                b11 = image.getpixel((l * 2 + 1, h * 3 + 1))
+                b20 = image.getpixel((l * 2 + 0, h * 3 + 2))
+                b21 = image.getpixel((l * 2 + 1, h * 3 + 2))
+
+                # Convertit chaque couleur de pixel en huit niveau de gris
+                b00 = self.huitNiveaux(b00)
+                b01 = self.huitNiveaux(b01)
+                b10 = self.huitNiveaux(b10)
+                b11 = self.huitNiveaux(b11)
+                b20 = self.huitNiveaux(b20)
+                b21 = self.huitNiveaux(b21)
+
+                # Recherche les deux couleurs les plus fréquentes
+                # un caractère ne peut avoir que deux couleurs !
+                arp, avp = self.deuxCoul([b00, b01, b10, b11, b20, b21])
+
+                # Réduit à deux le nombre de couleurs dans un bloc de 6 pixels
+                # Cela peut faire apparaître des artefacts mais est inévitable
+                b00 = self.arpouavp(b00, arp, avp)
+                b01 = self.arpouavp(b01, arp, avp)
+                b10 = self.arpouavp(b10, arp, avp)
+                b11 = self.arpouavp(b11, arp, avp)
+                b20 = self.arpouavp(b20, arp, avp)
+                b21 = self.arpouavp(b21, arp, avp)
+
+                # Convertit les 6 pixels en un caractère mosaïque du minitel
+                # Le caractère est codé sur 7 bits
+                b1 = b00
+                b2 = b01
+                b3 = b10
+                b4 = b11
+                b5 = b20
+                b6 = 1
+                b7 = b21
+
+                # Si les couleurs du précédent caractères sont inversés,
+                # inverse le caractère mosaïque. Cela évite d’émettre
+                # à nouveau des codes couleurs
+                if oldArp == avp and oldAvp == arp:
+                    b1 = 1 - b1
+                    b2 = 1 - b2
+                    b3 = 1 - b3
+                    b4 = 1 - b4
+                    b5 = 1 - b5
+                    b7 = 1 - b7
+                    dummy = avp
+                    avp = arp
+                    arp = dummy
+                    
+                # Génère l’octet (7 bits) du caractère mosaïque
+                mosaique = b1 + b2 * 2 + b3 * 4 + b4 * 8 + b5 * 16 + b6 * 32 + b7 * 64
+
+                if oldArp == arp and oldAvp == avp and mosaique == oldMosaique:
+                    # Les précédents pixels sont identiques, on le retient
+                    # pour utiliser un code de répétition plus tard
+                    compte += 1
+                else:
+                    # Les pixels ont changé, mais il peut y avoir des pixels
+                    # qui n’ont pas encore été émis pour cause d’optimisation
+                    if compte > 0:
+                        if compte == 1:
+                            combine.append(chr(oldMosaique))
+                        else:
+                            combine.append(chr(0x12) + chr(0x40 + compte))
+
+                        compte = 0
+
+                    # Génère les codes Minitel
+                    if oldArp != arp:
+                        # L’arrière-plan a changé
+                        combine.append(self.minitelArp(arp))
+                        oldArp = arp
+
+                    if oldAvp != avp:
+                        # L’avant-plan a changé
+                        combine.append(self.minitelAvp(avp))
+                        oldAvp = avp
+
+                    combine.append(chr(mosaique))
+                    oldMosaique = mosaique
+
+            if compte > 0:
+                if compte == 1:
+                    combine.append(chr(oldMosaique))
+                else:
+                    combine.append(chr(0x12) + chr(0x40 + compte))
+
+                compte = 0
+
+
+        return ''.join(combine)
+
+class MinitelCompilePage:
+    def __init__(self, fichier):
+        self.fichier = fichier
+        self.variables = {}
+        self.derniereColonne = 1
+        self.derniereLigne = 1
+
+    def compileNoeud(self, node):
+        if "gere" + node.nodeName in dir(self):
+            methode = getattr(self, "gere" + node.nodeName)
+
+            return methode(node)
+
+        return ''
+
+    def compile(self):
+        self.dom = xml.dom.minidom.parse(self.fichier)
+
+        affichage = self.dom.getElementsByTagName("affichage")[0]
+
+        combine = []
+        for node in affichage.childNodes:
+            combine.append(self.compileNoeud(node))
+
+        return ''.join(combine)
+
+    def normaliseChaine(self, chaine):
+        chaine = chaine.replace(u'£', unhexlify('1923'))
+        chaine = chaine.replace(u'¶', unhexlify('1923'))
+        chaine = chaine.replace(u'←', unhexlify('192C'))
+        chaine = chaine.replace(u'↑', unhexlify('192D'))
+        chaine = chaine.replace(u'→', unhexlify('192E'))
+        chaine = chaine.replace(u'↓', unhexlify('192F'))
+        chaine = chaine.replace(u'°', unhexlify('1930'))
+        chaine = chaine.replace(u'±', unhexlify('1931'))
+        chaine = chaine.replace(u'¼', unhexlify('193C'))
+        chaine = chaine.replace(u'½', unhexlify('193D'))
+        chaine = chaine.replace(u'¾', unhexlify('193E'))
+        chaine = chaine.replace(u'ç', unhexlify('194B') + u'c')
+        chaine = chaine.replace(u'’', unhexlify('194B') + u"'")
+
+        chaine = chaine.replace(u'à', unhexlify('1941') + u'a')
+        chaine = chaine.replace(u'á', unhexlify('1942') + u'a')
+        chaine = chaine.replace(u'â', unhexlify('1943') + u'a')
+        chaine = chaine.replace(u'ä', unhexlify('1948') + u'a')
+
+        chaine = chaine.replace(u'è', unhexlify('1941') + u'e')
+        chaine = chaine.replace(u'é', unhexlify('1942') + u'e')
+        chaine = chaine.replace(u'ê', unhexlify('1943') + u'e')
+        chaine = chaine.replace(u'ë', unhexlify('1948') + u'e')
+
+        chaine = chaine.replace(u'ì', unhexlify('1941') + u'i')
+        chaine = chaine.replace(u'í', unhexlify('1942') + u'i')
+        chaine = chaine.replace(u'î', unhexlify('1943') + u'i')
+        chaine = chaine.replace(u'ï', unhexlify('1948') + u'i')
+
+        chaine = chaine.replace(u'ò', unhexlify('1941') + u'o')
+        chaine = chaine.replace(u'ó', unhexlify('1942') + u'o')
+        chaine = chaine.replace(u'ô', unhexlify('1943') + u'o')
+        chaine = chaine.replace(u'ö', unhexlify('1948') + u'o')
+
+        chaine = chaine.replace(u'ù', unhexlify('1941') + u'u')
+        chaine = chaine.replace(u'ú', unhexlify('1942') + u'u')
+        chaine = chaine.replace(u'û', unhexlify('1943') + u'u')
+        chaine = chaine.replace(u'ü', unhexlify('1948') + u'u')
+
+        chaine = chaine.replace(u'Œ', unhexlify('196A'))
+        chaine = chaine.replace(u'œ', unhexlify('197A'))
+        chaine = chaine.replace(u'ß', unhexlify('197B'))
+        chaine = chaine.replace(u'β', unhexlify('197B'))
+
+        return chaine
+
+    def normaliseCouleur(self, couleur):
+        if couleur == 'noir': return 0
+        if couleur == 'rouge': return 1
+        if couleur == 'vert': return 2
+        if couleur == 'jaune': return 3
+        if couleur == 'bleu': return 4
+        if couleur == 'magenta': return 5
+        if couleur == 'cyan': return 6
+        if couleur == 'blanc': return 7
+
+        # Les niveaux de gris s’échelonnent comme suit :
+        # nor, bleu, rouge, magenta, vert, cyan, jaune, blanc
+        if couleur == '0': return 0
+        if couleur == '1': return 4
+        if couleur == '2': return 1
+        if couleur == '3': return 5
+        if couleur == '4': return 2
+        if couleur == '5': return 6
+        if couleur == '6': return 3
+        if couleur == '7': return 7
+
+        return None
+
+    def normaliseTaille(self, taille):
+        if taille == u'': return 0
+
+        if taille == u'1': return 0
+        if taille == u'2': return 1
+
+        if taille == u'simple': return 0
+        if taille == u'double': return 1
+
+        return None
+
+    def normaliseBooleen(self, booleen):
+        if booleen == u'ko': return False
+        if booleen == u'non': return False
+        if booleen == u'off': return False
+        if booleen == u'inactif': return False
+        if booleen == u'faux': return False
+        if booleen == u'invisible': return False
+
+        if booleen == u'': return True
+        if booleen == u'ok': return True
+        if booleen == u'oui': return True
+        if booleen == u'on': return True
+        if booleen == u'actif': return True
+        if booleen == u'vrai': return True
+        if booleen == u'visible': return False
+
+        return None
+
+    def traiteBooleen(self, node, actif, inactif):
+        booleen = self.normaliseBooleen(node.getAttribute('etat'))
+
+        if booleen == None: return ''
+        if booleen == True: return actif
+        return inactif
+        
+
+    def gerecouleur(self, node):
+        caractere = self.normaliseCouleur(node.getAttribute('caractere'))
+        fond = self.normaliseCouleur(node.getAttribute('fond'))
+
+        combine = []
+        if caractere != None: combine.append(chr(0x1b) + chr(0x40 + caractere))
+        if fond != None: combine.append(chr(0x1b) + chr(0x50 + fond))
+
+        return ''.join(combine)
+
+    def gereposition(self, node):
+        colonne = int(node.getAttribute('colonne'))
+        ligne = int(node.getAttribute('ligne'))
+        rappel = node.getAttribute('rappel')
+
+        if rappel:
+            colonne = self.derniereColonne + colonne
+            ligne = self.derniereLigne + ligne
+
+        self.derniereColonne = colonne
+        self.derniereLigne = ligne
+
+        if colonne == 1 and ligne == 1: return chr(0x1e)
+
+        return chr(0x1f) + chr(0x40 + ligne) + chr(0x40 + colonne)
+
+    def geretaille(self, node):
+        largeur = self.normaliseTaille(node.getAttribute('largeur'))
+        hauteur = self.normaliseTaille(node.getAttribute('hauteur'))
+
+        if largeur == None or hauteur == None: return ''
+
+        dimension = hauteur + largeur * 2
+        return chr(0x1b) + chr(0x4c + dimension)
+
+    def gereincrustation(self, node):
+        return self.traiteBooleen(node, unhexlify('1B4B'), unhexlify('1B4A'))
+
+    def geremasqueligne(self, node):
+        return self.traiteBooleen(node, unhexlify('1B58'), unhexlify('1B5F'))
+
+    def geresoulignement(self, node):
+        return self.traiteBooleen(node, unhexlify('1B5A'), unhexlify('1B59'))
+
+    def gereclignotement(self, node):
+        return self.traiteBooleen(node, unhexlify('1B48'), unhexlify('1B49'))
+
+    def gereinsertion(self, node):
+        return self.traiteBooleen(node, unhexlify('1B5B3468'), unhexlify('1B5B346C'))
+
+    def gereecho(self, node):
+        return self.traiteBooleen(
+            node,
+            unhexlify('1B3B615852'),
+            unhexlify('1B3B605852')
+        )
+
+    def gerevideo(self, node):
+        etat = node.getAttribute('etat')
+
+        if etat == u'normal': return unhexlify('1B5C')
+        if etat == u'inverse': return unhexlify('1B5D')
+        if etat == u'transparent': return unhexlify('1B5E')
+        return ''
+
+    def gerecurseur(self, node):
+        return self.traiteBooleen(node, chr(0x11), chr(0x14))
+
+    def gererepete(self, node):
+        nombre = int(node.getAttribute('nombre'))
+
+        combine = []
+        for enfant in node.childNodes:
+            if enfant.nodeType == enfant.TEXT_NODE:
+                combine.append(enfant.data)
+            else:
+                combine.append(self.compileNoeud(enfant))
+            
+        aRepeter = u''.join(combine)
+        aRepeterNorm = self.normaliseChaine(aRepeter)
+
+        if len(aRepeter) > 1 or nombre <=3: return aRepeterNorm * nombre
+
+        combine = []
+        combine.append(aRepeterNorm)
+        while nombre > 63:
+            combine.append(chr(0x12) + chr(0x40 + 63))
+            nombre -= 63
+
+        if nombre > 0: combine.append(chr(0x12) + chr(0x40 + nombre))
+
+        return ''.join(combine)
+
+    def geretexte(self, node):
+        largeur = node.getAttribute('largeur')
+
+        combine = []
+        for enfant in node.childNodes:
+            if enfant.nodeType == enfant.TEXT_NODE:
+                combine.append(enfant.data)
+            else:
+                combine.append(self.compileNoeud(enfant))
+            
+        if largeur != '':
+            largeur = int(largeur)
+            colonne = self.derniereColonne
+            ligne = self.derniereLigne
+
+            texte = u''.join(combine)
+            texte = u' '.join(texte.split())
+
+            rangees = []
+            rangee = []
+            for mot in texte.split(' '):
+                if len(u' '.join(rangee)) + len(mot) + 1 > largeur:
+                    rangees.append(u' '.join(rangee))
+                    rangee = []
+
+                rangee.append(mot)
+
+            if len(rangee) > 0: rangees.append(u' '.join(rangee))
+
+            combine = []
+            for rangee in rangees:
+                if len(combine) > 0:
+                    combine.append(chr(0x1f) + chr(0x40 + ligne) + chr(0x40 + colonne))
+                    self.derniereLigne = ligne
+
+                combine.append(rangee)            
+                ligne += 1
+
+        texte = u''.join(combine)
+
+        return self.normaliseChaine(texte)
+
+    def gererectangle(self, node):
+        couleur = self.normaliseCouleur(node.getAttribute('couleur'))
+
+        colonne = int(node.getAttribute('colonne'))
+        ligne = int(node.getAttribute('ligne'))
+
+        largeur = int(node.getAttribute('largeur'))
+        hauteur = int(node.getAttribute('hauteur'))
+
+        combine = []
+        for y in range(ligne, ligne + hauteur):
+            combine.append(chr(0x1f) + chr(0x40 + y) + chr(0x40 + colonne))
+            combine.append(chr(0x1b) + chr(0x50 + couleur))
+            combine.append(chr(0x0e) + ' ' + chr(0x12) + chr(0x40 + largeur - 1))
+
+        combine.append(chr(0x0f))
+
+        return ''.join(combine)
+
+    def geremode(self, node):
+        type = node.getAttribute('type')
+
+        if type == u'graphique': return chr(0x0e)
+        return chr(0x0f)
+
+    def gerehaut(self, node): return unhexlify('0B')
+    def gerebas(self, node): return unhexlify('0A')
+    def geregauche(self, node): return unhexlify('08')
+    def geredroite(self, node): return unhexlify('09')
+    def gerebip(self, node): return unhexlify('07')
+    def gereretourchariot(self, node): return unhexlify('0D')
+    def geremasque(self, node): return unhexlify('1B58')
+    def geredemasque(self, node): return unhexlify('1B5F')
+    def gereminuscules(self, node): return unhexlify('1B3A6945')
+    def geremajuscules(self, node): return unhexlify('1B3A6A45')
+    
+    def gereinclure(self, node):
+        page = node.getAttribute("page")
+
+        dom = xml.dom.minidom.parse(page)
+
+        affichage = dom.getElementsByTagName("affichage")[0]
+
+        combine = []
+        for node in affichage.childNodes:
+            combine.append(self.compileNoeud(node))
+
+        return ''.join(combine)
+
+    def geredefinir(self, node):
+        nom = node.getAttribute("nom")
+
+        combine = []
+        for enfant in node.childNodes:
+            if enfant.nodeType == enfant.TEXT_NODE:
+                combine.append(enfant.data)
+            else:
+                combine.append(self.compileNoeud(enfant))
+
+        self.variables[nom] = self.normaliseChaine(''.join(combine))
+
+        return ''
+                
+
+    def gerevariable(self, node):
+        nom = node.getAttribute("nom")
+
+        if nom in self.variables:
+            return self.variables[nom]
+        else:
+            combine = []
+            for enfant in node.childNodes:
+                if enfant.nodeType == enfant.TEXT_NODE:
+                    combine.append(enfant.data)
+                else:
+                    combine.append(self.compileNoeud(enfant))
+
+            return self.normaliseChaine(''.join(combine))
+
+    def gereimage(self, node):
+        nomFichier = node.getAttribute('fichier')
+
+        mci = MinitelConversionImage()
+
+        return mci.convertir(nomFichier)
+
+    def gerecode(self, node):
+        hexadecimal = node.getAttribute("hex")
+        return unhexlify(hexadecimal)
+
+    def gereefface(self, node):
+        jusque = node.getAttribute("jusque")
+
+        if jusque == '': return unhexlify('0C')
+
+        if jusque == 'finligne': return unhexlify('18')
+        if jusque == 'finecran': return unhexlify('1B5B4A')
+        if jusque == 'debutecran': return unhexlify('1B5B314A')
+        if jusque == 'tout': return unhexlify('1B5B324A')
+        if jusque == 'debutligne': return unhexlify('1B5B314B')
+        if jusque == 'ligne': return unhexlify('1B5B324B')
+
+        return ''
+
+    def geresupprime(self, node):
+        nombre = node.getAttribute("nombre")
+
+        return unhexlify('1B5B') + str(int(nombre)) + 'M'
+
+    def gereinsere(self, node):
+        nombre = node.getAttribute("nombre")
+
+        return unhexlify('1B5B') + str(int(nombre)) + 'L'
+
+    def geredeplace(self, node):
+        haut = node.getAttribute("haut")
+        bas = node.getAttribute("bas")
+        gauche = node.getAttribute("gauche")
+        droite = node.getAttribute("droite")
+
+        combine = []
+        if haut != '': combine.append(unhexlify('1B5B' + str(int(haut)) + 'A'))
+        if bas != '': combine.append(unhexlify('1B5B' + str(int(bas)) + 'B'))
+        if gauche != '': combine.append(unhexlify('1B5B' + str(int(gauche)) + 'D'))
+        if droite != '': combine.append(unhexlify('1B5B' + str(int(droite)) + 'C'))
+
+        return ''.join(combine)
+
+    def gereclavier(self, node):
+        etendu = self.normaliseBooleen(node.getAttribute("etendu"))
+        simple = self.normaliseBooleen(node.getAttribute("simple"))
+
+        combine = []
+        if etendu:
+            combine.append(unhexlify('1B3B695941'))
+        else:
+            combine.append(unhexlify('1B3B6A5941'))
+
+        if simple:
+            combine.append(unhexlify('1B3B695943'))
+        else:
+            combine.append(unhexlify('1B3B6A5943'))
+
+        return ''.join(combine)
+
+    def gereattente(self, node):
+        duree = int(node.getAttribute("duree"))
+
+        unite = 1000.0 / 120
+        nbUnite = duree / unite
+
+        return chr(0) * int(nbUnite)
+
+    def gereredefinir(self, node):
+        depuis = node.getAttribute("depuis")
+        jeu = node.getAttribute("jeu")
+
+        if len(depuis) == 1:
+            depuis = ord(depuis)
+        else:
+            depuis = int(depuis, 16)
+
+        combine = []
+        if jeu == 'G0':
+            combine.append(unhexlify('1F232020204249'))
+        else:
+            combine.append(unhexlify('1F232020204349'))
+
+        dessins = node.childNodes[0].data
+
+        combine.append(unhexlify('1F23') + chr(depuis) + unhexlify('30'))
+
+        octet = ''
+        comptePixel = 0
+        for pixel in dessins:
+            if pixel != '0' and pixel != '1': continue
+            octet = octet + pixel
+            comptePixel += 1
+
+            if len(octet) == 6:
+                combine.append(chr(0x40 + int(octet, 2)))
+                octet = ''
+
+            if comptePixel == 80:
+                combine.append(chr(0x40 + int(octet + '0000', 2)))
+                combine.append(chr(0x30))
+                octet = ''
+                comptePixel = 0
+
+        combine.append(unhexlify('1F4141'))
+
+        if jeu == 'GO':
+            combine.append(unhexlify('1B282042'))
+        else:
+            combine.append(unhexlify('1B292043'))
+
+        return ''.join(combine)
+
+
+if __name__ == '__main__':
+    from sys import argv, stderr, exit
+
+    if len(argv) != 3:
+        print >> stderr, "La commande nécessite 2 paramètres"
+        exit(1)
+      
+    nomFichierEntree = argv[1]
+    nomFichierSortie = argv[2]
+    try:
+        mc = MinitelCompilePage(nomFichierEntree)
+    except:
+        exit(2)
+
+    f = open(nomFichierSortie, 'wb')
+    f.write(mc.compile())
+    f.close()
+

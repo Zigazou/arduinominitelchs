@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="1" page="apropos" repertoire="minitel"/>
+    <touche nom="2" page="manif" repertoire="minitel"/>
+    <touche nom="3" page="plan" repertoire="minitel"/>
+    <touche nom="4" page="fourpain" repertoire="minitel"/>
+    <touche nom="5" page="vapeur" repertoire="minitel"/>
+    <touche nom="sommaire" page="racine" repertoire="racine"/>
+    <inactivite delai="30" page="exp10301" repertoire="econome"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Bloc d’information -->
+    <rectangle colonne="2" ligne="6" largeur="38" hauteur="16" couleur="rouge"/>
+
+    <position colonne="2" ligne="8"/>
+    <definir nom="numéro">1</definir>
+    <definir nom="libellé">A propos de nous</definir>
+    <inclure page="include/boutonracine.xml"/>
+
+    <position colonne="2" ligne="11"/>
+    <definir nom="numéro">2</definir>
+    <definir nom="libellé">Nos manifestations</definir>
+    <inclure page="include/boutonracine.xml"/>
+
+    <position colonne="2" ligne="14"/>
+    <definir nom="numéro">3</definir>
+    <definir nom="libellé">Nous rendre visite</definir>
+    <inclure page="include/boutonracine.xml"/>
+
+    <position colonne="2" ligne="17"/>
+    <definir nom="numéro">4</definir>
+    <definir nom="libellé">Le four à pain</definir>
+    <inclure page="include/boutonracine.xml"/>
+
+    <position colonne="2" ligne="20"/>
+    <definir nom="numéro">5</definir>
+    <definir nom="libellé">Les machines à vapeur</definir>
+    <inclure page="include/boutonracine.xml"/>
+
+    <!-- Commandes disponibles -->
+    <position colonne="1" ligne="23"/>
+    <texte>Touches 1 à 5 = lire les informations</texte>
+
+    <position colonne="1" ligne="24"/>
+    <texte>Touche SUITE  = page suivante</texte>
+
+  </affichage>
+</page>
+

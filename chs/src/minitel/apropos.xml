@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Bloc d’information -->
+    <rectangle colonne="2" ligne="6" largeur="38" hauteur="16" couleur="rouge"/>
+
+    <position colonne="3" ligne="7"/>
+    <texte>Le Centre d'Histoire Sociale est une</texte>
+    <position colonne="3" ligne="8"/>
+    <texte>association loi 1901 qui œuvre pour</texte>
+    <position colonne="3" ligne="9"/>
+    <texte>la sauvegarde du patrimoine indus-</texte>
+    <position colonne="3" ligne="10"/>
+    <texte>triel et technique de la Normandie.</texte>
+
+    <position colonne="3" ligne="12"/>
+    <texte>Elle est établie au</texte>
+    <position colonne="3" ligne="14"/>
+    <couleur caractere="cyan"/>
+    <texte>Moulin Saint-Gilles</texte>
+    <position colonne="3" ligne="15"/>
+    <couleur caractere="cyan"/>
+    <texte>13 rue Saint-Gilles</texte>
+    <position colonne="3" ligne="16"/>
+    <couleur caractere="cyan"/>
+    <texte>76000 Rouen</texte>
+
+    <position colonne="3" ligne="19"/>
+    <taille largeur="double" hauteur="double" />
+    <texte>www.expotec103.com</texte>
+    <position colonne="10" ligne="20"/>
+    <texte>contact@expotec103.com</texte>
+
+    <!-- Commandes disponibles -->
+    <position colonne="35" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+
+  </affichage>
+</page>
+

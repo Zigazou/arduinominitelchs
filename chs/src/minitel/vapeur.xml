@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Machine à vapeur -->
+    <image fichier="photo/marine.png"/>
+
+    <!-- Ajout des informations -->
+    <!-- Cartouche -->
+    <rectangle colonne="1" ligne="1" hauteur="4" largeur="31" couleur="bleu"/>
+    <position colonne="2" ligne="2"/>
+    <texte>Machine à vapeur Dujardin</texte>
+    <position colonne="2" ligne="3"/>
+    <texte>Distribution par piston-valve</texte>
+
+    <!-- Touche suite -->
+    <position colonne="34" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

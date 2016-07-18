@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="manif" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Saint Honoré -->
+    <definir nom="titre">Saint Honoré</definir>
+    <inclure page="include/fiche.xml"/>
+
+    <position colonne="3" ligne="9"/>
+    <texte largeur="36">Pendant 3 jours, le four banal de la Pannevert,
+    sur l’esplanade Jean Pierre Engelhard, est animé par nos boulangers
+    bénévoles qui y cuisent à l’ancienne des pains de campagnes, des
+    pains briés, des pains aux graînes, des brioches et même des chaussons
+    aux pommes pour le plaisir des gourmets.</texte>
+
+    <position colonne="0" ligne="2" rappel="rappel" />
+    <texte largeur="36">La fête des boulangers ou comment retrouver le plaisir des
+    goûts simples !</texte>
+
+    <!-- Commandes disponibles -->
+    <position colonne="35" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

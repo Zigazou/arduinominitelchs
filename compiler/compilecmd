@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import xml.dom.minidom
+from struct import pack
+
+class MinitelCompileCommande:
+    def __init__(self, fichier):
+        self.fichier = fichier
+
+    def compileNoeud(self, node):
+        if "gere" + node.nodeName in dir(self):
+            methode = getattr(self, "gere" + node.nodeName)
+            return methode(node)
+
+        return ''
+
+    def compile(self):
+        self.dom = xml.dom.minidom.parse(self.fichier)
+
+        clavier = self.dom.getElementsByTagName("clavier")[0]
+
+        combine = []
+        for node in clavier.childNodes:
+            combine.append(self.compileNoeud(node))
+
+        return ''.join(combine)
+
+    def normaliseTouche(self, touche):
+        if touche == u'connexion': return 4953
+        if touche == u'sommaire': return 4934
+        if touche == u'annulation': return 4933
+        if touche == u'retour': return 4930
+        if touche == u'répétition': return 4931
+        if touche == u'envoi': return 4929
+        if touche == u'suite': return 4936
+        if touche == u'correction': return 4935
+        if touche == u'guide': return 4932
+
+        if touche == u'ctrl+sommaire': return
+        if touche == u'ctrl+annulation': return 6435
+        if touche == u'£': return 6435
+        if touche == u'ctrl+retour': return 6506
+        if touche == u'ctrl+répétition': return 6522
+        if touche == u'ctrl+suite': return 6523
+        if touche == u'ctrl+correction': return 1657699
+
+        if touche == u'maj+connexion': return 4937
+        if touche == u'brk': return 4937
+        if touche == u'maj+sommaire': return 6467
+        if touche == u'maj+annulation': return 92
+        if touche == u'\\': return 92
+        if touche == u'maj+retour': return 6466
+        if touche == u'maj+répétition': return 4123
+        if touche == u'maj+envoi': return 4125
+        if touche == u'maj+suite': return 6465
+        if touche == u'maj+correction': return 46439
+        if touche == u'§': return 46439
+        if touche == u'maj+guide': return 6472
+
+        return ord(touche)
+
+    def geretouche(self, node):
+        touche = self.normaliseTouche(node.getAttribute('nom'))
+        page = node.getAttribute('page')
+        repertoire = node.getAttribute('repertoire')
+
+        combine = ''
+        combine += pack('c', 'T')
+        combine += pack('<l', touche)
+        combine += pack('27s', str(repertoire) + '/' + str(page) + '.vdt')
+
+        return combine
+
+    def gereinactivite(self, node):
+        delai = int(node.getAttribute('delai'))
+        page = node.getAttribute('page')
+        repertoire = node.getAttribute('repertoire')
+
+        combine = ''
+        combine += pack('c', 'D')
+        combine += pack('<l', delai)
+        combine += pack('27s', str(repertoire) + '/' + str(page) + '.vdt')
+
+        return combine
+
+if __name__ == '__main__':
+    from sys import argv, stderr, exit
+
+    if len(argv) != 3:
+        print >> stderr, "La commande nécessite 2 paramètres"
+        exit(1)
+
+    nomFichierEntree = argv[1]
+    nomFichierSortie = argv[2]
+
+    mc = MinitelCompileCommande(nomFichierEntree)
+
+    f = open(nomFichierSortie, 'wb')
+    f.write(mc.compile())
+    f.close()
+

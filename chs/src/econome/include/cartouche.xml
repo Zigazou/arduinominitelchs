@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <affichage>
+    <!-- Cartouche -->
+    <rectangle colonne="1" ligne="1" largeur="40" hauteur="2" couleur="bleu"/>
+    <rectangle colonne="1" ligne="3" largeur="40" hauteur="2" couleur="vert"/>
+
+    <position colonne="8" ligne="2"/>
+    <taille largeur="simple" hauteur="double" />
+    <texte>CENTRE D'HISTOIRE SOCIALE</texte>
+
+    <position colonne="10" ligne="4"/>
+    <taille largeur="double" hauteur="double" />
+    <texte>EXPOTEC 103</texte>
+  </affichage>
+</page>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+    <inactivite delai="10" page="exp10304" repertoire="econome"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Slide imprimerie -->
+    <image fichier="image/expotec103-03.png"/>
+
+    <!-- Informations -->
+    <position colonne="6" ligne="6"/>
+    <taille hauteur="double"/>
+    <texte>Linotype</texte>
+
+    <position colonne="0" ligne="2" rappel="on"/>
+    <taille hauteur="double"/>
+    <texte>Presse à bras</texte>
+
+    <position colonne="0" ligne="2" rappel="on"/>
+    <taille hauteur="double"/>
+    <texte>Platine Heidelberg</texte>
+
+    <position colonne="0" ligne="2" rappel="on"/>
+    <taille hauteur="double"/>
+    <texte>Caractères en plomb</texte>
+
+    <position colonne="0" ligne="2" rappel="on"/>
+    <taille hauteur="double"/>
+    <texte>Caractères à affiche</texte>
+
+    <!-- Touche suite -->
+    <position colonne="34" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="manif" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Saint Honoré -->
+    <definir nom="titre">Journées du Patrimoine</definir>
+    <inclure page="include/fiche.xml"/>
+
+    <position colonne="3" ligne="9"/>
+    <texte largeur="36">Au mois de septembre, le CHS ne manque jamais d’ouvrir
+    ses portes pour faire découvrir au public toutes les richesses cachées du
+    patrimoine industriel de la région.</texte>
+
+    <position colonne="0" ligne="2" rappel="rappel" />
+    <texte largeur="36">Avec l’imprimerie, les machines
+    à vapeur, le travail de la matière avec la forge Mustad, les machines outils
+    et l’atelier de polissage, le textile avec le jardin de plantes tinctoriales,
+    vous ne saurez plus où donner de la tête !</texte>
+
+    <!-- Commandes disponibles -->
+    <position colonne="35" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

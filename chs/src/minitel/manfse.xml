@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="manif" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Saint Honoré -->
+    <definir nom="titre">Saint Eloi</definir>
+    <inclure page="include/fiche.xml"/>
+
+    <position colonne="3" ligne="9"/>
+    <texte largeur="36">Le dernier week-end de novembre, la fête des forgerons
+    permet à nos bénévoles et aux artistes invités de donner libre cours à 
+    leur expression autour de la forge Mustad et de son marteau-pilon.</texte>
+
+    <position colonne="0" ligne="2" rappel="rappel" />
+    <texte largeur="36">L’atelier de polissage permet ensuite de finaliser
+    le fruit de leur travail.</texte>
+
+    <!-- Commandes disponibles -->
+    <position colonne="35" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

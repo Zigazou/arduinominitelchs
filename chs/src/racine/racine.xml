@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Règle des paramètres une fois pour toutes -->
+    <curseur etat="off"/>
+    <clavier etendu="ok" simple="ok"/>
+    <echo etat="off"/>
+    <minuscules/>
+    <insertion etat="off"/>
+
+    <!-- Logo du Centre d’Histoire Sociale -->
+    <image fichier="photo/chs.png"/>
+
+    <!-- Message d’information -->
+    <position colonne="7" ligne="21"/>
+    <clignotement etat="on"/>
+    <texte>Appuyez sur la touche SUITE...</texte>
+    <clignotement etat="off"/>
+  </affichage>
+</page>
+

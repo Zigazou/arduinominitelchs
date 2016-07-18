@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+    <inactivite delai="10" page="exp10305" repertoire="econome"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Slide imprimerie -->
+    <image fichier="image/expotec103-04.png"/>
+
+    <!-- Touche suite -->
+    <position colonne="34" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

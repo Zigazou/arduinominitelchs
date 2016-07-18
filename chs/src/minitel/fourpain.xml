@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Four banal de la Pannevert de Rouen -->
+    <image fichier="photo/fourpain.png"/>
+
+    <!-- Ajout des informations -->
+    <!-- Cartouche -->
+    <rectangle colonne="1" ligne="1" hauteur="4" largeur="31" couleur="bleu"/>
+    <position colonne="2" ligne="2"/>
+    <texte>Four banal de la Pannevert</texte>
+    <position colonne="2" ligne="3"/>
+    <texte>Espl. Jean-Pierre-Engelhard</texte>
+
+    <!-- Touche suite -->
+    <position colonne="34" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

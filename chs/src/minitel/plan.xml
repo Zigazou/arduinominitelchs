@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Plan de Rouen -->
+    <image fichier="photo/planrouen.png"/>
+
+    <!-- Ajout des informations -->
+    <!-- Rouen -->
+    <position colonne="18" ligne="11"/>
+    <taille hauteur="double" largeur="double"/>
+    <couleur caractere="noir"/>
+    <texte>ROUEN</texte>
+
+    <!-- Expotec -->
+    <position colonne="24" ligne="15"/>
+    <taille hauteur="double"/>
+    <couleur caractere="noir"/>
+    <clignotement etat="on"/>
+    <texte>EXPOTEC→</texte>
+    <clignotement etat="off"/>
+
+    <!-- Cartouche -->
+    <rectangle colonne="1" ligne="1" hauteur="4" largeur="31" couleur="bleu"/>
+    <position colonne="2" ligne="2"/>
+    <texte>Teor T3, arrêt Ecole d’Archi.</texte>
+    <position colonne="2" ligne="3"/>
+    <texte>GPS: 49°26'15,67"N/1°8'2,17"E</texte>
+
+    <!-- Touche suite -->
+    <position colonne="34" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+

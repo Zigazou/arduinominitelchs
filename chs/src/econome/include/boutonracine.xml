@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <affichage>
+    <taille hauteur="double"/>
+    <video etat="inverse"/>
+    <couleur fond="noir" caractere="rouge"/>
+    <soulignement etat="on"/>
+    <texte> </texte>
+    <couleur caractere="blanc"/>
+    <texte> <variable nom="numéro"/>}</texte>
+    <video etat="normal"/>
+
+    <droite/><texte><variable nom="libellé"/></texte>
+  </affichage>
+</page>
+

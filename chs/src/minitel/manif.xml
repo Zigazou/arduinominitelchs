@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="sommaire" page="menu" repertoire="minitel"/>
+    <touche nom="1" page="manfsjpl" repertoire="minitel"/>
+    <touche nom="2" page="manfsh" repertoire="minitel"/>
+    <touche nom="3" page="manfjdp" repertoire="minitel"/>
+    <touche nom="4" page="manfse" repertoire="minitel"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Cartouche -->
+    <inclure page="include/cartouche.xml" />
+
+    <!-- Bloc d’information -->
+    <rectangle colonne="2" ligne="6" largeur="38" hauteur="17" couleur="rouge"/>
+
+    <!-- Saint Jean Porte-Latine -->
+    <position colonne="2" ligne="8"/>
+    <definir nom="numéro">1</definir>
+    <definir nom="libellé">Saint Jean Porte-Latine</definir>
+    <definir nom="légende">La fête des imprimeurs</definir>
+    <inclure page="include/boutonlegende.xml"/>
+
+    <!-- Saint Honoré -->
+    <position colonne="2" ligne="12"/>
+    <definir nom="numéro">2</definir>
+    <definir nom="libellé">Saint Honoré</definir>
+    <definir nom="légende">La fête des boulangers</definir>
+    <inclure page="include/boutonlegende.xml"/>
+
+    <!--Journées du patrimoine -->
+    <position colonne="2" ligne="16"/>
+    <definir nom="numéro">3</definir>
+    <definir nom="libellé">Journées du Patrimoine</definir>
+    <definir nom="légende">Le patrimoine industriel</definir>
+    <inclure page="include/boutonlegende.xml"/>
+
+    <!-- Saint Éloi -->
+    <position colonne="2" ligne="20"/>
+    <definir nom="numéro">4</definir>
+    <definir nom="libellé">Saint Eloi</definir>
+    <definir nom="légende">La fête des forgerons</definir>
+    <inclure page="include/boutonlegende.xml"/>
+
+    <!-- Commandes disponibles -->
+    <position colonne="7" ligne="24"/>
+    <texte>Touches 1 à 4 ou </texte><inclure page="include/touchesommaire.xml"/>
+  </affichage>
+</page>
+

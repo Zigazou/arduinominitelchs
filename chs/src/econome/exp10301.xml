@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <clavier>
+    <touche nom="suite" page="menu" repertoire="minitel"/>
+    <inactivite delai="10" page="exp10302" repertoire="econome"/>
+  </clavier>
+  <affichage>
+    <efface/>
+
+    <!-- Plan de Rouen -->
+    <image fichier="image/expotec103-01.png"/>
+
+    <!-- Touche suite -->
+    <position colonne="34" ligne="24"/>
+    <inclure page="include/touchesuite.xml"/>
+  </affichage>
+</page>
+
